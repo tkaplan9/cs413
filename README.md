@@ -1,4 +1,4 @@
-## Info
+# Info
 
 In "src" there is the java file, in "cs413" there are the php files.
 
