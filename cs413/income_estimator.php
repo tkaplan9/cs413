@@ -34,16 +34,15 @@ $row = mysqli_fetch_assoc($result);
 				<a href="home.php"><i class="fas fa-arrow-alt-circle-left"></i>Back</a>
 				<a href="logout.php"><i class="fas fa-sign-out-alt"></i>Logout</a>
 			</div>
-			<div>
-				<p><b style="font-size:24px;"> </p>
-				<p><br><b style="font-size:24px;">Currently Working in:<?=$_SESSION['cname']?></p>
-				<p><b style="font-size:24px;">Current Job Title: <?=$_SESSION['position']?></p>
-				<p><b style="font-size:24px;">Current Salary: <?=$_SESSION['salary']?></p>			
-				<p><br><b style="font-size:24px;">Estimated Salary in Ankara Region: <?=$row["AVG(salary)"]?></b></p>
-				<p><b style="font-size:24px;">Difference from Estimated and Current Salaries: <?=$row["AVG(salary)"]- $_SESSION['salary']?></b></p>
-			</div>
 		</nav>
 		<div class="content">
+			<div>
+				<p>Currently Working in: <?=$_SESSION['cname']?></p>
+				<p>Current Job Title: <?=$_SESSION['position']?></p>
+				<p>Current Salary: <?=$_SESSION['salary']?></p>			
+				<p>Estimated Salary in Ankara Region: <?=$row["AVG(salary)"]?></p>
+				<p>Difference between Estimated and Current Salaries: <?=$row["AVG(salary)"] - $_SESSION['salary']?></p>
+			</div>
 		</div>
 	</body>
 </html>
