@@ -16,17 +16,22 @@ if (mysqli_connect_errno()) {
 
 // prepare sql stament
 $data = "";
-$sql = "SELECT cid, cname, quota FROM company WHERE cname = '{$_POST['cname']}'";
+$sql = "SELECT cid, cname, position, quota, salary FROM company WHERE cname = '{$_POST['cname']}'";
 $result = mysqli_query($con, $sql);
 if (mysqli_num_rows($result) > 0) {
 	// output data of each row
-	$data .= "<table><tr><th width=\"25%\">Company Name</th><th width =\"25%\">Max Quota</th><th width=\"25%\"></th></tr>";
+	$data .= "<table><tr><th width=\"15%\">Company Name</th>
+	<th width=\"15%\">Position</th>
+	<th width=\"15%\">Max Quota</th>
+	<th width=\"15%\">Salary</th></tr>";
 	while($row = mysqli_fetch_assoc($result)) {
-		$data .= "<tr><td style=\"text-align:center\" width=\"25%\">" . $row["cname"]. 
-		"</td><td style=\"text-align:center\" width=\"25%\">" . $row["quota"]. 
-		"</td><td style=\"text-align:left\" width=\"25%\"><img src=\"images/" . $row["cid"] . ".png\">".
-		"</td><td style=\"text-align:center\" width=\"25%\"><a href=\"apply.php?cid=" . $row["cid"] . "\">Apply to this company</a></td></tr>";
-	}
+		$data .= "<tr><td style=\"text-align:center\" width=\"15%\">" . $row["cname"]. 
+		"</td><td style=\"text-align:center\" width=\"15%\">" . $row["position"]. 
+		"</td><td style=\"text-align:center\" width=\"15%\">" . $row["quota"]. 
+		"</td><td style=\"text-align:center\" width=\"15%\">" . $row["salary"]. 
+		"</td><td style=\"text-align:left\" width=\"20%\"><img src=\"images/" . $row["cid"] . ".png\">".
+		"</td><td style=\"text-align:center\" width=\"20%\"><a href=\"apply.php?cid=" . $row["cid"] . "&position=" . $row["position"] . "\">Apply to this position</a></td></tr>";
+    }
 	$data .= "</table>";
 }
 else{

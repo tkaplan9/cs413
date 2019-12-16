@@ -21,15 +21,20 @@ if (isset($_GET['Message'])) {
 
 // prepare sql statement
 $data = "";
-$sql = "SELECT cid, cname, quota FROM (company NATURAL JOIN apply) WHERE eid = '{$_SESSION['id']}'";
+$sql = "SELECT cid, cname, position, quota, salary FROM (company NATURAL JOIN apply) WHERE eid = '{$_SESSION['id']}'";
 $result = mysqli_query($con, $sql);
 if (mysqli_num_rows($result) > 0) {
     // output data of each row
-    $data .= "<table><tr><th width=\"25%\">Company Name</th><th width=\"25%\">Max Quota</th></tr>";
+	$data .= "<table><tr><th width=\"20%\">Company Name</th>
+	<th width=\"20%\">Position</th>
+	<th width=\"20%\">Max Quota</th>
+	<th width=\"20%\">Salary</th></tr>";
     while($row = mysqli_fetch_assoc($result)) {
-		$data .= "<tr><td style=\"text-align:center\" width=\"25%\">" . $row["cname"]. 
-		"</td><td style=\"text-align:center\" width=\"25%\">" . $row["quota"]. 
-		"</td><td style=\"text-align:center\" width =\"25%\"><a href=\"cancel_application.php?cid=" . $row["cid"] . "\">Cancel Application</a></td></tr>";
+		$data .= "<tr><td style=\"text-align:center\" width=\"20%\">" . $row["cname"]. 
+		"</td><td style=\"text-align:center\" width=\"20%\">" . $row["position"]. 
+		"</td><td style=\"text-align:center\" width=\"20%\">" . $row["quota"]. 
+		"</td><td style=\"text-align:center\" width=\"20%\">" . $row["salary"]. 
+		"</td><td style=\"text-align:center\" width =\"20%\"><a href=\"cancel_application.php?cid=" . $row["cid"] . "&position=" . $row["position"] . "\">Cancel Application</a></td></tr>";
     }
     $data .= "</table>";
 } 
@@ -39,25 +44,30 @@ else {
 
 // prepare sql statement to display a single company 
 $data2 = "";
-$sql2 = "SELECT DISTINCT cid, t1.cname as cname , t1.quota as quota FROM
-			( SELECT cid, cname, quota FROM company 
-			WHERE cid NOT IN 
-				( SELECT cid FROM apply WHERE eid = '{$_SESSION['id']}' )
+$sql2 = "SELECT DISTINCT cid, t1.cname as cname, t1.position as position, t1.quota as quota, t1.salary as salary FROM
+			( SELECT cid, cname, position, quota, salary FROM company 
+			WHERE (cid, position) NOT IN 
+				( SELECT cid, position FROM apply WHERE eid = '{$_SESSION['id']}' )
 			) AS t1
 			INNER JOIN
-			( SELECT cid, cname, quota FROM company c1 WHERE
-			c1.quota > (SELECT COUNT(eid) FROM apply WHERE cid = c1.cid)
+			( SELECT cid, cname, position, quota, salary FROM company c1 WHERE
+			c1.quota > (SELECT COUNT(eid) FROM apply WHERE cid = c1.cid AND position = c1.position)
 			) AS t2 
-			USING(cid)";
+			USING(cid, position)";
 $result2 = mysqli_query($con, $sql2);
 if (mysqli_num_rows($result2) > 0) {
     // output data of each row
-	$data2 .= "<table><tr><th width=\"25%\">Company Name</th><th width =\"25%\">Max Quota</th><th width=\"25%\"></th></tr>";
+	$data2 .= "<table><tr><th width=\"15%\">Company Name</th>
+	<th width=\"15%\">Position</th>
+	<th width=\"15%\">Max Quota</th>
+	<th width=\"15%\">Salary</th></tr>";
     while($row2 = mysqli_fetch_assoc($result2)) {
-		$data2 .= "<tr><td style=\"text-align:center\" width=\"25%\">" . $row2["cname"]. 
-		"</td><td style=\"text-align:center\" width=\"25%\">" . $row2["quota"]. 
-		"</td><td style=\"text-align:left\" width=\"25%\"><img src=\"images/" . $row2["cid"] . ".png\">".
-		"</td><td style=\"text-align:center\" width=\"25%\"><a href=\"apply.php?cid=" . $row2["cid"] . "\">Apply to this company</a></td></tr>";
+		$data2 .= "<tr><td style=\"text-align:center\" width=\"15%\">" . $row2["cname"]. 
+		"</td><td style=\"text-align:center\" width=\"15%\">" . $row2["position"]. 
+		"</td><td style=\"text-align:center\" width=\"15%\">" . $row2["quota"]. 
+		"</td><td style=\"text-align:center\" width=\"15%\">" . $row2["salary"]. 
+		"</td><td style=\"text-align:left\" width=\"20%\"><img src=\"images/" . $row2["cid"] . ".png\">".
+		"</td><td style=\"text-align:center\" width=\"20%\"><a href=\"apply.php?cid=" . $row2["cid"] . "&position=" . $row2["position"] . "\">Apply to this position</a></td></tr>";
     }
     $data2 .= "</table>";
 } 
@@ -78,6 +88,7 @@ else {
 			<div>
 				<h1>Jawbs</h1>
 				<a href="home.php"><i class="fas fa-home"></i>Home</a>
+				<a href="income_estimator.php"><i class="fas fa-search-dollar"></i>Income Estimator</a>
 				<a href="logout.php"><i class="fas fa-sign-out-alt"></i>Logout</a>
 			</div>
 		</nav>
@@ -88,12 +99,18 @@ else {
 				<input type="image" src="images/search.png" value="Submit">
 			</form>
 			<p>Welcome, <?=$_SESSION['name']?></p>
+			<div>
+                <p><b style="font-size:24px;">Your current job status</b></p>
+				<p>Working in: <?=$_SESSION['cname']?></p>
+				<p>Job Title: <?=$_SESSION['position']?></p>
+				<p>Current Salary: <?=$_SESSION['salary']?></p>
+			</div>
             <div>
-                <p>Your applications</p>
+                <p><b style="font-size:24px;">Your applications</b></p>
                 <?=$data?>
 			</div>
 			<div>
-				<p>Available companies for you</p>
+				<p><b style="font-size:24px;">Recommended openings for you</b></p>
                 <?=$data2?>
             </div>
 		</div>

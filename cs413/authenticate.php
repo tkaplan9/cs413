@@ -12,14 +12,14 @@ if ( $_POST['name'] == "" || $_POST['password'] == "" ) {
 	alert("Please fill both fields");
 }
 // prepare sql stament
-else if ($stmt = $con->prepare('SELECT sname, password, eid FROM employee WHERE sname = ?')) {
+else if ($stmt = $con->prepare('SELECT sname, password, eid, position, salary, cname FROM employee WHERE sname = ?')) {
 	// Bind parameters (s = string, i = int, b = blob, etc), in our case the username is a string so we use "s"
 	$stmt->bind_param('s', $_POST['name']);
 	$stmt->execute();
 	// check if account exists in our database
     $stmt->store_result();
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($name, $password, $id);
+        $stmt->bind_result($name, $password, $id, $position, $salary, $cname);
         $stmt->fetch();
         // account exists, check the password.
         if ($_POST['password'] === $password) {
@@ -30,6 +30,9 @@ else if ($stmt = $con->prepare('SELECT sname, password, eid FROM employee WHERE 
             $_SESSION['name'] = $name;
             $_SESSION['id'] = $id;
             $_SESSION['password'] = $password;
+            $_SESSION['position'] = $position;
+            $_SESSION['salary'] = $salary;
+            $_SESSION['cname'] = $cname;
             header('Location: home.php');
         } 
         else {

@@ -19,27 +19,29 @@ if (isset($_GET['Message'])) {
     print '<script type="text/javascript">alert("' . $_GET['Message'] . '");</script>';
 }
 
-//get cid
+//get cid and position
 $cid = "";
-if (isset($_GET['cid'])) {
-    $cid = $_GET['cid'];
+$position = "";
+if (isset($_GET['cid']) && isset($_GET['position']) ) {
+	$cid = $_GET['cid'];
+	$position = $_GET['position'];
 }
 
 // prepare sql stament
-$sql = "SELECT cid FROM apply WHERE cid = '{$cid}' AND eid = '{$_SESSION['id']}'";
+$sql = "SELECT cid FROM apply WHERE cid = '{$cid}' AND position = '{$position}' AND eid = '{$_SESSION['id']}'";
 $result = mysqli_query($con, $sql);
 if (mysqli_num_rows($result) > 0) {
 	header("Location: home.php?Message=" . urlencode("You have already applied to this company"));
 }
 else{
-	$sql = "SELECT cid, cname FROM company WHERE cid = '{$cid}' AND
-		quota = (SELECT COUNT(eid) FROM apply WHERE cid = '{$cid}')";
+	$sql = "SELECT cid, cname FROM company WHERE cid = '{$cid}' AND position = '{$position}' AND
+		quota = (SELECT COUNT(eid) FROM apply WHERE cid = '{$cid}' AND position = '{$position}' )";
 	$result = mysqli_query($con, $sql);
 	if (mysqli_num_rows($result) > 0) {
 		header("Location: home.php?Message=" . urlencode("The maximum application quota for this company has been reached"));
 	}
 	else{
-		$insertSQL = "INSERT INTO apply (eid,cid) VALUES ({$_SESSION['id']},'{$cid}');";
+		$insertSQL = "INSERT INTO apply (eid,cid,position) VALUES ({$_SESSION['id']},'{$cid}','{$position}');";
         if(mysqli_query($con, $insertSQL)){
             header("Location: home.php?Message=" . urlencode("New application successful"));
         }
