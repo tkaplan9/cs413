@@ -21,27 +21,28 @@ public class cs413 {
 			//create tables
 			createTables(con);
 			
-			//insert employee tuples
-			insertToEmployee(con, "21601737", "qwerty", "Tarik", "1998-08-29", "Ankara", "senior", "3.02f");
-			insertToEmployee(con, "21212121", "qwerty", "ooo", "2000-05-08", "Ankara", "sophomore", "2.75f");
-			insertToEmployee(con, "20000000", "qwerty", "test", "2000-02-02", "Ankara", "junior", "2.55f");
-			
 			//insert company tuples
-			insertToCompany(con, "C101", "tubitak", "2");
-			insertToCompany(con, "C102", "aselsan", "5");
-			insertToCompany(con, "C103", "havelsan", "3");
-			insertToCompany(con, "C104", "microsoft", "5");
-			insertToCompany(con, "C105", "google", "3");
-			insertToCompany(con, "C106", "tai", "4");
-			insertToCompany(con, "C107", "milsoft", "2");
+			insertToCompany(con, "C101", "Junior Software Engineer", "Tubitak", "2", "100000");
+			insertToCompany(con, "C102", "Database Analyst", "Aselsan", "5", "250000");
+			insertToCompany(con, "C103", "Senior Software Engineer", "Havelsan", "3", "300000");
+			insertToCompany(con, "C104", "Software Architect", "Microsoft", "5", "350000");
+			insertToCompany(con, "C105", "Project Manager", "Google", "3", "500000");
+			insertToCompany(con, "C105", "Junior Software Engineer", "Google", "7", "200000");
+			insertToCompany(con, "C106", "Junior Software Engineer", "TAI", "4", "120000");
+			insertToCompany(con, "C107", "Senior Software Engineer", "Milsoft", "2", "275000");
+			
+			//insert employee tuples
+			insertToEmployee(con, "21601737", "qwerty", "Tarik", "1998-08-29", "Ankara", "Aselsan", "Senior Software Engineer", "300000");
+			insertToEmployee(con, "21212121", "qwerty", "ooo", "2000-05-08", "Ankara", "Microsoft", "Senior Software Engineer", "300000");
+			insertToEmployee(con, "20000000", "qwerty", "test", "2000-02-02", "Ankara", "Google", "Senior Software Engineer", "300000");
 			
 			//insert apply tuples
-			insertToApply(con, "21601737", "C105");
-			insertToApply(con, "21212121", "C107");
-			insertToApply(con, "20000000", "C107");
+			insertToApply(con, "21601737", "C105", "Project Manager");
+			insertToApply(con, "21212121", "C107", "Senior Software Engineer");
+			insertToApply(con, "20000000", "C107", "Senior Software Engineer");
 			
 			//display all employees
-			allEmployees(con);
+			//allEmployees(con);
 		}
 		catch(ClassNotFoundException e) { //exception for JBDC driver
 			throw new IllegalStateException("Cannot find the driver", e);
@@ -91,26 +92,30 @@ public class cs413 {
 		                   " sname VARCHAR(50), " + 
 		                   " bdate DATE, " + 
 		                   " scity VARCHAR(20), " + 
-		                   " year CHAR(20), " + 
-		                   " gpa FLOAT, " + 
+		                   " cname VARCHAR(20), " + 
+		                   " position VARCHAR(50), " + 
+		                   " salary INT, " + 
 		                   " PRIMARY KEY ( eid ) " +
 		                   " ) ENGINE=INNODB";
 		    String companySql = "CREATE TABLE company(" +
 	                   " cid CHAR(8) not NULL, " +
+	                   " position VARCHAR(50) not NULL, " +
 	                   " cname VARCHAR(20), " + 
 	                   " quota INT, " +
-	                   " PRIMARY KEY ( cid ) " +
+	                   " salary INT, " + 
+	                   " PRIMARY KEY ( cid, position ) " +
 	                   " ) ENGINE=INNODB";
 		    String applySql = "CREATE TABLE apply(" +
 		    		   " eid CHAR(12) not NULL, " +   
 		    		   " cid CHAR(8) not NULL, " +
-		    		   " PRIMARY KEY ( eid, cid ), " +
+		    		   " position VARCHAR(50) not NULL, " +
+		    		   " PRIMARY KEY ( eid, cid, position ), " +
 		    		   " FOREIGN KEY (eid) REFERENCES employee(eid), " +
-		    		   " FOREIGN KEY (cid) REFERENCES company(cid) " +
+		    		   " FOREIGN KEY (cid, position) REFERENCES company(cid, position) " +
 	                   " ) ENGINE=INNODB";
 		    
-		    stmt.executeUpdate(employeeSql);
 		    stmt.executeUpdate(companySql);
+		    stmt.executeUpdate(employeeSql);
 		    stmt.executeUpdate(applySql);
 		    System.out.println("Created the tables");
 		}
@@ -142,9 +147,8 @@ public class cs413 {
 		}
 	}
 	
-	public static void insertToEmployee( Connection con, String eid, String password, String sname, String bdate, String scity, String year, String gpa ) {
+	public static void insertToEmployee( Connection con, String eid, String password, String sname, String bdate, String scity, String cname, String position, String salary ) {
 		boolean valid = true;
-		String gpaCorrected = "";
 		// error checking
 		if( eid == null) {
 			System.out.println("employee id can't be empty");
@@ -174,18 +178,6 @@ public class cs413 {
 			System.out.println("employee city can't be longer than 20 characters");
 			valid = false;
 		}
-		else if( year != null && year.length() > 20 ) {
-			System.out.println("year can't be longer than 20 characters");
-			valid = false;
-		}
-		else if( gpa != null ){
-			try{
-				gpaCorrected = String.valueOf(Float.parseFloat(gpa));
-			}
-			catch( NumberFormatException e) {
-				throw new IllegalStateException("gpa should be a float", e);
-			}
-		}
 		
 		// insert
 		if( valid ) {
@@ -193,14 +185,15 @@ public class cs413 {
 				System.out.println("Inserting " + eid + " into employee");
 			    Statement stmt = con.createStatement();
 			    //SQL string to insert
-			    String sql = "INSERT INTO employee (eid, password, sname, bdate, scity, year, gpa) VALUES (" +
+			    String sql = "INSERT INTO employee (eid, password, sname, bdate, scity, cname, position, salary) VALUES (" +
 			    			 "'" + eid + "'," +
 			    			 "'" + password + "'," +
 			    			 "'" + sname + "'," +
 			    			 "'" + bdate + "'," +
 			    			 "'" + scity + "'," +
-			    			 "'" + year + "'," +
-			    			 "'" + gpaCorrected + "'" +
+			    			 "'" + cname + "'," +
+			    			 "'" + position + "'," +
+			    			 "'" + salary + "'" +
 			    			 " )";
 			    
 			    stmt.executeUpdate(sql);
@@ -212,7 +205,7 @@ public class cs413 {
 		}
 	}
 	
-	public static void insertToCompany( Connection con, String cid, String cname, String quota ) {
+	public static void insertToCompany( Connection con, String cid, String position, String cname, String quota, String salary) {
 		boolean valid = true;
 		// error checking
 		if( cid == null) {
@@ -238,10 +231,12 @@ public class cs413 {
 				System.out.println("Inserting " + cid + " into company");
 			    Statement stmt = con.createStatement();
 			    //SQL string to insert
-			    String sql = "INSERT INTO company (cid, cname, quota) VALUES (" +
+			    String sql = "INSERT INTO company (cid, position, cname, quota, salary) VALUES (" +
 			    			 "'" + cid + "'," +
+			    			 "'" + position + "'," +
 			    			 "'" + cname + "'," +
-			    			 "'" + quota + "'" +
+			    			 "'" + quota + "'," +
+			    			 "'" + salary + "'" +
 			    			 " )";
 			    
 			    stmt.executeUpdate(sql);
@@ -253,7 +248,7 @@ public class cs413 {
 		}
 	}
 	
-	public static void insertToApply( Connection con, String eid, String cid ) {
+	public static void insertToApply( Connection con, String eid, String cid, String position ) {
 		boolean valid = true;
 		// error checking
 		if( eid == null) {
@@ -280,9 +275,10 @@ public class cs413 {
 				System.out.println("Inserting employee id: " + eid + ", company id: " + cid + " into apply");
 			    Statement stmt = con.createStatement();
 			    //SQL string to insert
-			    String sql = "INSERT INTO apply (eid, cid) VALUES (" +
+			    String sql = "INSERT INTO apply (eid, cid, position) VALUES (" +
 			    			 "'" + eid + "'," +
-			    			 "'" + cid + "'" +
+			    			 "'" + cid + "'," +
+			    			 "'" + position + "'" +
 			    			 " )";
 			    
 			    stmt.executeUpdate(sql);
