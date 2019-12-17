@@ -9,8 +9,8 @@ The php part is basically the UI part which is what we will show in the demo, to
 # Example demo use:
 - Enter username "Tarik" and password "qwerty"
 - You will see an application to a google position and some other companies are available to be applied (including another google position)
-- Apply to some other position
-- Cancel an application
+- Apply to Havelsan
+- Cancel Havelsan application
 - Milsoft is a company registered to our system but in the available companies section you won't see it, that's because it's quota is reached.
 - Search "milsoft" on home page
 - It should come up, try to register to it, you can't, quota message will be displayed.
