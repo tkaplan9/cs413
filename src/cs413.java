@@ -40,9 +40,6 @@ public class cs413 {
 			insertToApply(con, "21601737", "C105", "Project Manager");
 			insertToApply(con, "21212121", "C107", "Senior Software Engineer");
 			insertToApply(con, "20000000", "C107", "Senior Software Engineer");
-			
-			//display all employees
-			//allEmployees(con);
 		}
 		catch(ClassNotFoundException e) { //exception for JBDC driver
 			throw new IllegalStateException("Cannot find the driver", e);
@@ -287,39 +284,6 @@ public class cs413 {
 			catch( SQLException e ) {
 				throw new IllegalStateException("Cannot insert employee id: " + eid + ", company id: " + cid + " into apply", e);
 			}
-		}
-	}
-	
-	public static void allEmployees(Connection con) { //this is also hardcoded for the same reasons as createTables
-		try {
-			System.out.println("Displaying all employees:");
-		    
-			//SQL string to select all employees
-		    String sql = "SELECT *, DATE_FORMAT(bdate,'%d.%m.%Y') AS formatted_date FROM employee";
-			PreparedStatement stmt = con.prepareStatement(sql);
-			ResultSet rs = stmt.executeQuery();
-			System.out.printf("%10s", "eid");
-			System.out.printf("%10s", "password");
-			System.out.printf("%10s", "sname");
-			System.out.printf("%15s", "bdate");
-			System.out.printf("%12s", "scity");
-			System.out.printf("%12s", "year");
-			System.out.printf("%10s", "gpa");
-			System.out.println();
-			while(rs.next()) {
-				System.out.printf("%10s", rs.getString(1));
-				System.out.printf("%10s", rs.getString(2));
-				System.out.printf("%10s", rs.getString(3));
-				System.out.printf("%15s", rs.getString(8)); //new column in the result set, formatted_date
-				System.out.printf("%12s", rs.getString(5));
-				System.out.printf("%12s", rs.getString(6));
-				System.out.printf("%10s", rs.getString(7));
-				System.out.println();
-			}
-		    
-		}
-		catch( SQLException e ) {
-			throw new IllegalStateException("Cannot display employees", e);
 		}
 	}
 }
