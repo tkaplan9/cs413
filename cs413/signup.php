@@ -50,7 +50,10 @@ if (isset($_POST['signedUser'])) {
 	}
 	header('location: index.html');
   }
-
+  else
+  {
+	  alert(array_pop($errors));
+  }
 function alert($msg) {
     echo "<script type='text/javascript'>
         alert('$msg');
