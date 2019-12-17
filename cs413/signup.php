@@ -39,14 +39,14 @@ if (isset($_POST['signedUser'])) {
   // Finally, register user if there are no errors in the form
   if (count($errors) == 0) {
 	if($flag == 0){
-		$query = "INSERT INTO employee (eid,sname, password, scity, cname,position,salary) 
+		$query1 = "INSERT INTO employee (eid,sname, password, scity, cname,position,salary) 
 				  VALUES(32321,'$username', '$password', '$city', '$company', '$position', '$salary')";
-		mysqli_query($con, $query);
+		mysqli_query($con, $query1);
 	}
 	if($flag == 1){
-		$query = "INSERT INTO employee (eid, sname, password, scity) 
+		$query2 = "INSERT INTO employee (eid, sname, password, scity) 
 				  VALUES(1234123,'$username', '$password', '$city')";
-		mysqli_query($con, $query);
+		mysqli_query($con, $query2);
 	}
 	header('location: index.html');
   }
