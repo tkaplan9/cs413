@@ -19,6 +19,25 @@ if (isset($_GET['Message'])) {
     print '<script type="text/javascript">alert("' . $_GET['Message'] . '");</script>';
 }
 
+if( $_SESSION['cname'] == "" ){
+	$cname = "Currently you are not registered to any company";
+}
+else{
+	$cname = "Working in: " . $_SESSION['cname'];
+}
+if( $_SESSION['position'] == "" ){
+	$position = "Currently you are not registered to any position";
+}
+else{
+	$position = "Job Title: " . $_SESSION['position'];
+}
+if( $_SESSION['salary'] == "" ){
+	$salary = "Currently you don't have a registered salary";
+}
+else{
+	$salary = "Current Salary: " . number_format($_SESSION['salary']);
+}
+
 // prepare sql statement
 $data = "";
 $sql = "SELECT cid, cname, position, quota, salary FROM (company NATURAL JOIN apply) WHERE eid = '{$_SESSION['id']}'";
@@ -33,7 +52,7 @@ if (mysqli_num_rows($result) > 0) {
 		$data .= "<tr><td style=\"text-align:center\" width=\"20%\">" . $row["cname"]. 
 		"</td><td style=\"text-align:center\" width=\"20%\">" . $row["position"]. 
 		"</td><td style=\"text-align:center\" width=\"20%\">" . $row["quota"]. 
-		"</td><td style=\"text-align:center\" width=\"20%\">" . $row["salary"]. 
+		"</td><td style=\"text-align:center\" width=\"20%\">" . number_format($row["salary"]). 
 		"</td><td style=\"text-align:center\" width =\"20%\"><a href=\"cancel_application.php?cid=" . $row["cid"] . "&position=" . $row["position"] . "\">Cancel Application</a></td></tr>";
     }
     $data .= "</table>";
@@ -65,7 +84,7 @@ if (mysqli_num_rows($result2) > 0) {
 		$data2 .= "<tr><td style=\"text-align:center\" width=\"15%\">" . $row2["cname"]. 
 		"</td><td style=\"text-align:center\" width=\"15%\">" . $row2["position"]. 
 		"</td><td style=\"text-align:center\" width=\"15%\">" . $row2["quota"]. 
-		"</td><td style=\"text-align:center\" width=\"15%\">" . $row2["salary"]. 
+		"</td><td style=\"text-align:center\" width=\"15%\">" . number_format($row2["salary"]). 
 		"</td><td style=\"text-align:left\" width=\"20%\"><img src=\"images/" . $row2["cid"] . ".png\">".
 		"</td><td style=\"text-align:center\" width=\"20%\"><a href=\"apply.php?cid=" . $row2["cid"] . "&position=" . $row2["position"] . "\">Apply to this position</a></td></tr>";
     }
@@ -101,9 +120,9 @@ else {
 			<p>Welcome, <?=$_SESSION['name']?></p>
 			<div>
                 <p><b style="font-size:24px;">Your current job status</b></p>
-				<p>Working in: <?=$_SESSION['cname']?></p>
-				<p>Job Title: <?=$_SESSION['position']?></p>
-				<p>Current Salary: <?=$_SESSION['salary']?></p>
+				<p><?=$cname?></p>
+				<p><?=$position?></p>
+				<p><?=$salary?></p>
 			</div>
             <div>
                 <p><b style="font-size:24px;">Your applications</b></p>

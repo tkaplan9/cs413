@@ -28,7 +28,7 @@ if (mysqli_num_rows($result) > 0) {
 		$data .= "<tr><td style=\"text-align:center\" width=\"15%\">" . $row["cname"]. 
 		"</td><td style=\"text-align:center\" width=\"15%\">" . $row["position"]. 
 		"</td><td style=\"text-align:center\" width=\"15%\">" . $row["quota"]. 
-		"</td><td style=\"text-align:center\" width=\"15%\">" . $row["salary"]. 
+		"</td><td style=\"text-align:center\" width=\"15%\">" . number_format($row["salary"]). 
 		"</td><td style=\"text-align:left\" width=\"20%\"><img src=\"images/" . $row["cid"] . ".png\">".
 		"</td><td style=\"text-align:center\" width=\"20%\"><a href=\"apply.php?cid=" . $row["cid"] . "&position=" . $row["position"] . "\">Apply to this position</a></td></tr>";
     }
