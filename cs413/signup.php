@@ -28,6 +28,16 @@ else if (isset($_POST['signedUser'])) {
     if (empty($position) && empty($salary) && empty($company)) {$flag = 1;}
 }
 
+//first check the database to make sure 
+// a user does not already exist with the same username
+$user_check_query = "SELECT * FROM employee WHERE username='$username' LIMIT 1";
+$result = mysqli_query($con, $user_check_query);
+$user = mysqli_fetch_assoc($result);
+
+if ($user['username'] === $username) { // if user exists
+    array_push($errors, "Username already exists");
+}
+
 // Finally, register user if there are no errors in the form
 if (count($errors) == 0) {
     if($flag == 0){
