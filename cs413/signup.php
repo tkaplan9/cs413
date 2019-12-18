@@ -30,11 +30,9 @@ else if (isset($_POST['signedUser'])) {
 
 //first check the database to make sure 
 // a user does not already exist with the same username
-$user_check_query = "SELECT * FROM employee WHERE username='$username' LIMIT 1";
+$user_check_query = "SELECT sname FROM employee WHERE sname='$username'";
 $result = mysqli_query($con, $user_check_query);
-$user = mysqli_fetch_assoc($result);
-
-if ($user['username'] === $username) { // if user exists
+if ( mysqli_num_rows($result) != 0 ) { // if user exists
     array_push($errors, "Username already exists");
 }
 
@@ -60,6 +58,7 @@ else //display errors if any
     }
     alert($alertMsg);
 }
+
 function alert($msg) {
     echo "<script type='text/javascript'>
         alert('$msg');
